@@ -351,9 +351,14 @@ void gnuplot_setstyle (gnuplot_ctrl *handle, char *plot_style) {
 
 /*-------------------------------------------------------------------------*/
 /**
-  @brief    Change the plotting style of a gnuplot session.
+  @brief    Change the plotting style of a gnuplot session with more options.
   @param    handle      Gnuplot session control handle
   @param    plot_style  Plotting-style (character string)
+  @param    linetype    Line type (integer >= -1)
+  @param    linecolor   Line color (character string)
+  @param    linewidth   Line width (float >= 0)
+  @param    pointtype   Point type (integer >= -1)
+  @param    pointsize   Point size (float >= 0)
   @return   void
 
   The provided plotting style is one of the following character strings:
@@ -366,6 +371,12 @@ void gnuplot_setstyle (gnuplot_ctrl *handle, char *plot_style) {
   - errorbars (superseded by xerrorbars and xyerrorbars since version 5.0)
   - boxes
   - boxerrorbars
+
+  See https://gnuplot.sourceforge.net/docs_4.2/node237.html for other parameter
+  options. Run "test" in gnuplot to see various line/point types.
+
+  If an option is set to something outside its boundary (e.g. if linewidth is
+  negative or if linecolor is an empty string) that parameter will not be used.
  */
 /*--------------------------------------------------------------------------*/
 
@@ -948,7 +959,6 @@ void gnuplot_plot_once (char *style, char *label_x, char *label_y, double *x, do
 
   /* Generate commands to send to gnuplot */
   gnuplot_setstyle(handle, (style == NULL) ? "lines" : style);
-  strcpy(handle->pstyle, style);
   gnuplot_set_axislabel(handle, "x", (label_x == NULL) ? "X" : label_x);
   gnuplot_set_axislabel(handle, "y", (label_y == NULL) ? "Y" : label_y);
   gnuplot_plot_coordinates(handle, x, y, n, title);

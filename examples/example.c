@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) {
   gnuplot_resetplot(h1);
   printf("quadratic 1d array\n");
   gnuplot_setstyle(h1, "points");
-  gnuplot_fancy_setstyle(h1, "points", 0, "red", 5.0, 7, 6.0);
   gnuplot_set_axislabel(h1, "x", "X");
   for (i = 0; i < NPOINTS; i++) {
     x[i] = (double)i * i;
@@ -105,7 +104,7 @@ int main(int argc, char *argv[]) {
   printf("\n*** user-defined lists of points: 2d\n");
   gnuplot_resetplot(h1);
   printf("square root 2d array\n");
-  gnuplot_setstyle(h1, "lines");
+  gnuplot_setstyle(h1, "points");
   gnuplot_set_axislabel(h1, "y", "square root");
   for (i = 0; i < NPOINTS; i++) {
     x[i] = (double)i/2;  // change of axis scale
