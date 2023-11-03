@@ -218,7 +218,7 @@ gnuplot_ctrl *gnuplot_init (void) {
     gnuplot_setterm(handle, "x11", width, height);
 #else
   /* The default is wxt, but this requires wxWidgets to be installed (need a test for that) */
-  gnuplot_setterm(handle, "wxt", width, height);
+  gnuplot_setterm(handle, "qt", width, height);
 #endif
   return handle;
 }
@@ -346,6 +346,78 @@ void gnuplot_setstyle (gnuplot_ctrl *handle, char *plot_style) {
   } else {
     strcpy(handle->pstyle, plot_style);
   }
+  return;
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Change the plotting style of a gnuplot session.
+  @param    handle      Gnuplot session control handle
+  @param    plot_style  Plotting-style (character string)
+  @return   void
+
+  The provided plotting style is one of the following character strings:
+  - lines
+  - points
+  - linespoints
+  - impulses
+  - dots
+  - steps
+  - errorbars (superseded by xerrorbars and xyerrorbars since version 5.0)
+  - boxes
+  - boxerrorbars
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_fancy_setstyle (gnuplot_ctrl *handle, char *plot_style, int linetype,
+    char *linecolor, float linewidth, int pointtype, float pointsize) {
+  char parameter[16];
+  /* Erase existing style */
+  handle->pstyle[0] = '\0';
+
+  if (strcmp(plot_style, "lines") &&
+      strcmp(plot_style, "points") &&
+      strcmp(plot_style, "linespoints") &&
+      strcmp(plot_style, "impulses") &&
+      strcmp(plot_style, "dots") &&
+      strcmp(plot_style, "steps") &&
+      strcmp(plot_style, "filledcurves") &&
+      strcmp(plot_style, "errorbars") &&
+      strcmp(plot_style, "boxes") &&
+      strcmp(plot_style, "boxerrorbars")) {
+    fprintf(stderr, "Warning: unknown requested plot style: using default 'points'\n");
+    strcat(handle->pstyle, "points");
+  } else {
+    strcat(handle->pstyle, plot_style);
+  }
+  strcat(handle->pstyle, " ");
+
+  if (linetype >= -1) {
+    sprintf(parameter, "lt %d ", linetype);
+    strcat(handle->pstyle, parameter);
+  }
+
+  if (linecolor != NULL && linecolor[0] != '\0') {
+    strcat(handle->pstyle, "lc \"");
+    strcat(handle->pstyle, linecolor);
+    strcat(handle->pstyle, "\" ");
+  }
+
+  if (linewidth >= 0) {
+    sprintf(parameter, "lw %.1f ", linewidth);
+    strcat(handle->pstyle, parameter);
+  }
+
+  if (pointtype >= -1) {
+    sprintf(parameter, "pt %d ", pointtype);
+    strcat(handle->pstyle, parameter);
+  }
+
+  if (pointsize >= 0) {
+    sprintf(parameter, "ps %.1f", pointsize);
+    strcat(handle->pstyle, parameter);
+  }
+
   return;
 }
 
@@ -876,6 +948,7 @@ void gnuplot_plot_once (char *style, char *label_x, char *label_y, double *x, do
 
   /* Generate commands to send to gnuplot */
   gnuplot_setstyle(handle, (style == NULL) ? "lines" : style);
+  strcpy(handle->pstyle, style);
   gnuplot_set_axislabel(handle, "x", (label_x == NULL) ? "X" : label_x);
   gnuplot_set_axislabel(handle, "y", (label_y == NULL) ? "Y" : label_y);
   gnuplot_plot_coordinates(handle, x, y, n, title);

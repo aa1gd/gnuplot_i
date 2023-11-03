@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   /** Equations */
 
   printf("\n*** various equations\n");
-  gnuplot_setterm(h1, "wxt", 900, 400);
+  gnuplot_setterm(h1, "qt", 900, 400);
   gnuplot_resetplot(h1);
   printf("y = sin(x)\n");
   gnuplot_plot_equation(h1, "sin(x)", "sine points");  // points is the default linestyle
@@ -69,12 +69,32 @@ int main(int argc, char *argv[]) {
   gnuplot_plot_equation(h1, "atan(x/pi)", "arctangens steps");
   sleep(SECONDS);
 
+  /** Fancy styles */
+
+  printf("\n*** various fancy styles\n");
+  gnuplot_resetplot(h1);
+  printf("sin(x) in linespoints\n");
+  gnuplot_fancy_setstyle(h1, "linespoints", 0, "red", 5.0, -2, -2);
+  gnuplot_plot_equation(h1, "sin(x)", "sine linespoints");
+  sleep(SECONDS);
+  printf("cos(x/pi) in impulses\n");
+  gnuplot_fancy_setstyle(h1, "impulses", 8, "blue", 2.0, -2, -2);
+  // note that M_PI cannot be used in the denominator, since that is not known to gnuplot...
+  gnuplot_plot_equation(h1, "cos(x/(atan(1)*4))", "sine impulses");
+  sleep(SECONDS);
+  printf("atan(x/pi) in steps\n");
+  gnuplot_fancy_setstyle(h1, "steps", 2, "green", 11.0, -2, -2);
+  // ...but it is possible to use gnuplot constants, such as "pi"
+  gnuplot_plot_equation(h1, "atan(x/pi)", "arctangens steps");
+  sleep(SECONDS);
+
   /** User defined 1d and 2d point sets */
 
   printf("\n*** user-defined list of points: 1d\n");
   gnuplot_resetplot(h1);
   printf("quadratic 1d array\n");
   gnuplot_setstyle(h1, "points");
+  gnuplot_fancy_setstyle(h1, "points", 0, "red", 5.0, 7, 6.0);
   gnuplot_set_axislabel(h1, "x", "X");
   for (i = 0; i < NPOINTS; i++) {
     x[i] = (double)i * i;
@@ -85,7 +105,7 @@ int main(int argc, char *argv[]) {
   printf("\n*** user-defined lists of points: 2d\n");
   gnuplot_resetplot(h1);
   printf("square root 2d array\n");
-  gnuplot_setstyle(h1, "points");
+  gnuplot_setstyle(h1, "lines");
   gnuplot_set_axislabel(h1, "y", "square root");
   for (i = 0; i < NPOINTS; i++) {
     x[i] = (double)i/2;  // change of axis scale
@@ -174,7 +194,8 @@ int main(int argc, char *argv[]) {
   h3 = gnuplot_init();
   gnuplot_setstyle(h3, "filledcurves");
   printf("window 1: x*sin(x)\n");
-  gnuplot_cmd(h1, "set linecolor rgb 'blue'");   // this does not work yet
+  /* gnuplot_cmd(h1, "set linecolor rgb 'blue'");   // this does not work yet */
+  gnuplot_fancy_setstyle(h1, "lines", -1, "blue", 1.0, -2, -2); /* replacement for above */
   gnuplot_plot_equation(h1, "x*sin(x)", "x*sin(x)");
   sleep(SECONDS);
   printf("window 2: log(x)/x\n");

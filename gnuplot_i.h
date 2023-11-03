@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <time.h>
 
+/** Maximum string length of style descriptor */
+#define GP_MAX_STYLE_LENGTH 64
 /** Maximum number of simultaneous temporary files */
 #define GP_MAX_TMP_FILES 64
 /** Maximum amount of characters of a temporary file name */
@@ -47,7 +49,7 @@
 typedef struct _GNUPLOT_CTRL_ {
   FILE *gnucmd;       /*!< Pipe to gnuplot process. */
   int nplots;         /*!< Number of currently active plots. */
-  char pstyle[32];    /*!< Current plotting style. */
+  char pstyle[GP_MAX_STYLE_LENGTH];    /*!< Current plotting style. */
   char term[32];      /*!< Save terminal name, used by `gnuplot_hardcopy()` function. */
   char to_delete[GP_MAX_TMP_FILES][GP_TMP_NAME_SIZE];   /*!< Names of temporary files. */
   int ntmp;           /*!< Number of temporary files in the current session. */
@@ -86,6 +88,7 @@ gnuplot_ctrl *gnuplot_init (void);
 void gnuplot_close (gnuplot_ctrl *handle);
 void gnuplot_cmd (gnuplot_ctrl *handle, char *cmd, ...);
 void gnuplot_setstyle (gnuplot_ctrl *handle, char *plot_style);
+void gnuplot_fancy_setstyle (gnuplot_ctrl *handle, char *plot_style, int linetype, char *linecolor, float linewidth, int pointtype, float pointsize);
 void gnuplot_setterm (gnuplot_ctrl *handle, char *terminal, int width, int height);
 void gnuplot_set_axislabel (gnuplot_ctrl *handle, char *axis, char *label);
 void gnuplot_resetplot (gnuplot_ctrl *handle);
